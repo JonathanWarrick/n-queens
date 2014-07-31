@@ -11,13 +11,72 @@
 // take a look at solversSpec.js to see what the tests are expecting
 
 
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
+// return a matrix (an array of arrays) representing a single nxn chessboard,
+// with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
+  var board = new Board({n:n});
 
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  var solution = board._currentAttributes;
+  delete solution.n;
+
+  var hasRowConflictAt = function(rowIndex) {
+    if (solution[rowIndex].reduce(function(a, b) {
+      return a + b;
+    }, 0) === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  var hasColConflictAt = function(colIndex) {
+    var sum = 0;
+    for (key in solution) {
+      if (key !== "n") {
+        sum += solution[key][colIndex];
+        if (sum === 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  var loop = function(obj, arr) {
+    if (obj === 3 && arr === 2) {
+       // debugger;
+    }
+    if (obj === n - 1 && arr === n - 1) {
+      if (!hasRowConflictAt(obj) &&
+          !hasColConflictAt(arr)) {
+        solution[obj][arr] = 1;
+      }
+      return solution;
+    } else {
+      if (!hasRowConflictAt(obj) &&
+          !hasColConflictAt(arr)) {
+        solution[obj][arr] = 1;
+      }
+      var objIndex = obj;
+      var arrIndex = arr;
+      if (arrIndex === n - 1) {
+        objIndex++;
+        arrIndex = 0;
+      } else {
+        arrIndex++;
+      }
+      return loop(objIndex, arrIndex);
+    }
+  };
+  loop(0, 0);
+
+  var solutionArray = [];
+  for (var key in solution) {
+    solutionArray.push(solution[key]);
+  }
+  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solutionArray));
+  return solutionArray;
 };
 
 

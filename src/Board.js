@@ -11,6 +11,7 @@
         console.log('Good guess! But to use the Board() constructor, you must pass it an argument in one of the following formats:');
         console.log('\t1. An object. To create an empty board of size n:\n\t\t{n: %c<num>%c} - Where %c<num> %cis the dimension of the (empty) board you wish to instantiate\n\t\t%cEXAMPLE: var board = new Board({n:5})', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: grey;');
         console.log('\t2. An array of arrays (a matrix). To create a populated board of size n:\n\t\t[ [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...] ] - Where each %c<val>%c is whatever value you want at that location on the board\n\t\t%cEXAMPLE: var board = new Board([[1,0,0],[0,1,0],[0,0,1]])', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: grey;');
+        console.log(this);
       } else if (params.hasOwnProperty('n')) {
         this.set(makeEmptyMatrix(this.get('n')));
       } else {
@@ -79,12 +80,25 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      if (this._currentAttributes[rowIndex].reduce(function(a, b) {
+              return a + b;
+            }, 0) > 1) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      for (key in this._currentAttributes) {
+        if (key !== "n") {
+          if (this.hasRowConflictAt(key)) {
+            return true;
+          }
+        }
+      }
+      return false;
     },
 
 
@@ -94,12 +108,27 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var sum = 0;
+      for (key in this._currentAttributes) {
+        if (key !== "n") {
+          sum += this._currentAttributes[key][colIndex];
+          if (sum > 1) {
+            return true;
+          }
+        }
+      }
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      for (key in this._currentAttributes) {
+        if (key !== "n") {
+          if (this.hasColConflictAt(key))
+            return true;
+        }
+      }
+      return false;
     },
 
 
@@ -109,12 +138,41 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
+      /*
+      if(arguments.length === 0){
+        index = 0;
+      } else {
+        index = arguments[1];
+      }
+      if (majorDiagonalColumnIndexAtFirstRow < 0) {
+        return this.hasMajorDiagonalConflictAt(majorDiagonalColumnIndexAtFirstRow+1, index+1);
+      }
+*/
+      if(majorDiagonalColumnIndexAtFirstRow < 0){
+        majorDiagonalColumnIndexAtFirstRow = Math.abs(majorDiagonalColumnIndexAtFirstRow)
+      }
+
+      var sum = 0;
+      var index = 0;
+      for(var i = majorDiagonalColumnIndexAtFirstRow; i < this._currentAttributes.n; i++){
+        sum += this._currentAttributes[index][i];
+        if(sum > 1){
+          return true;
+        }
+        index++;
+      }
       return false; // fixme
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      for (key in this._currentAttributes) {
+        if (key !== "n") {
+          if (this.hasMajorDiagonalConflictAt(key))
+            return true;
+        }
+      }
+      return false;
     },
 
 
@@ -124,12 +182,36 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
+      var index;
+      if(minorDiagonalColumnIndexAtFirstRow > this._currentAttributes.n - 1){
+        index = minorDiagonalColumnIndexAtFirstRow-(this._currentAttributes.n-1);
+        minorDiagonalColumnIndexAtFirstRow = 3;
+      } else{
+        index = 0;
+      }
+
+      var sum = 0;
+      for(var i = minorDiagonalColumnIndexAtFirstRow; i >= 0; i--){
+        if(index < this._currentAttributes.n){
+          sum += this._currentAttributes[index][i];
+          if(sum > 1){
+            return true;
+          }
+          index++;
+        }
+      }
       return false; // fixme
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      for (key in this._currentAttributes) {
+        if (key !== "n") {
+          if (this.hasMinorDiagonalConflictAt(key))
+            return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
