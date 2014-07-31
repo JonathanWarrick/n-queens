@@ -83,8 +83,95 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0;
+  var outcomesRun = 0;
+  var piecesPlayed = 0;
 
+  var board = new Board({n:n});
+
+  var solution = board._currentAttributes;
+  delete solution.n;
+
+  var hasRowConflictAt = function(rowIndex) {
+    if (solution[rowIndex].reduce(function(a, b) {
+      return a + b;
+    }, 0) === 1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  var hasColConflictAt = function(colIndex) {
+    var sum = 0;
+    for (key in solution) {
+      if (key !== "n") {
+        sum += solution[key][colIndex];
+        if (sum === 1) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  var resetBoard = function() {
+    for (var key in solution) {
+      for (var i = 0; i < n; i++) {
+        solution[key][i] = 0;
+      }
+    }
+  };
+
+  var loop = function(obj, arr) {
+    // debugger;
+    if (!(outcomesRun === Math.pow(n, n))) {
+      if (obj === n - 1 && arr === n - 1) {
+        if (!hasRowConflictAt(obj) &&
+            !hasColConflictAt(arr)) {
+          solution[obj][arr] = 1;
+          solutionCount++;
+          // moved outside
+          outcomesRun++;
+          piecesPlayed = 0;
+          resetBoard();
+        }
+      } else {
+        if (hasRowConflictAt(obj) ||
+            hasColConflictAt(arr)) {
+          // moved outside
+          outcomesRun++;
+          piecesPlayed = 0;
+          resetBoard();
+          // break;
+        } else {
+          solution[obj][arr] = 1;
+          piecesPlayed++;
+          if (piecesPlayed === n) {
+            solutionCount++;
+            // moved outside
+            outcomesRun++;
+            piecesPlayed = 0;
+            resetBoard();
+            // break;
+          }
+          var objIndex = obj;
+          var arrIndex = arr;
+          if (arrIndex === n - 1) {
+            objIndex++;
+            arrIndex = 0;
+          } else {
+            arrIndex++;
+          }
+          return loop(objIndex, arrIndex);
+        }
+      }
+    } else {
+      return solutionCount;
+    }
+  };
+
+  loop(0, 0);
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
