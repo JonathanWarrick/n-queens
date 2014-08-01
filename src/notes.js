@@ -26,31 +26,19 @@
   // When we get down to a 2x2 box, there are two possible boards
   // Don't have to be next to each other
 
-var rookFinder = function() {
+var rookFinder = function(n) {
   // will store passing outcomes after all tests are passed
   var outcomes = [];
 
   // store each individual combination to be tested
   // var tempOutcome = [];
 
-  for(var i = 0; i < 9; i++){
-    if(i <= 6){
-      var firstRook = i;
-      // tempOutcome[i] = 1;
-      for(var j = i + 1; j < 9; j++){
-        // tempOutcome[j] = 1;
-        var secondRook = j;
-        for(var k = j+1; k < 9; k++){
-          // tempOutcome[k] = 1;
-          // outcomes.push(tempOutcome);
-          // tempOutcome.pop();
-          var thirdRook = k;
-          var outcomeArray = [0,0,0,0,0,0,0,0,0];
-          outcomeArray[i] = 1;
-          outcomeArray[j] = 1;
-          outcomeArray[k] = 1;
-          outcomes.push(outcomeArray);
-        }
+  var recurse = function(loop){
+    if(loop === n-1){
+
+    } else {
+      for(var i = loop; i < (n * n + loop - n); i++){
+        return recurse(loop+1);
       }
     }
   }
@@ -91,3 +79,26 @@ var columnCollision = function(outcome) {
   return columnCollision;
 };
 
+/*
+  for(var i = 0; i < 9; i++){
+    if(i <= 6){
+      var firstRook = i;
+      // tempOutcome[i] = 1;
+      for(var j = i + 1; j < 9; j++){
+        // tempOutcome[j] = 1;
+        var secondRook = j;
+        for(var k = j+1; k < 9; k++){
+          // tempOutcome[k] = 1;
+          // outcomes.push(tempOutcome);
+          // tempOutcome.pop();
+          var thirdRook = k;
+          var outcomeArray = [0,0,0,0,0,0,0,0,0];
+          outcomeArray[i] = 1;
+          outcomeArray[j] = 1;
+          outcomeArray[k] = 1;
+          outcomes.push(outcomeArray);
+        }
+      }
+    }
+  }
+*/

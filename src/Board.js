@@ -148,28 +148,46 @@
         return this.hasMajorDiagonalConflictAt(majorDiagonalColumnIndexAtFirstRow+1, index+1);
       }
 */
-      if(majorDiagonalColumnIndexAtFirstRow < 0){
-        majorDiagonalColumnIndexAtFirstRow = Math.abs(majorDiagonalColumnIndexAtFirstRow)
+
+      // if number passed in is < 0
+        // index = Math.abs(number passed in)
+      // else
+
+      // if number passed in >= 0
+      // index = 0;
+      // i = number passed in
+      var sum = 0;
+
+      if (majorDiagonalColumnIndexAtFirstRow >= 0) {
+        var index = 0;
+        for (var i = majorDiagonalColumnIndexAtFirstRow; i < this._currentAttributes.n; i++) {
+          sum += this._currentAttributes[index][i];
+          if (sum > 1) {
+            return true;
+          }
+          index++;
+        }
+      } else {
+        var index = Math.abs(majorDiagonalColumnIndexAtFirstRow);
+        var loops = this._currentAttributes.n - index;
+        for (var i = 0; i < loops; i++) {
+ //         debugger;
+          sum += this._currentAttributes[index][i];
+          if (sum > 1) {
+            return true;
+          }
+          index++;
+        }
       }
 
-      var sum = 0;
-      var index = 0;
-      for(var i = majorDiagonalColumnIndexAtFirstRow; i < this._currentAttributes.n; i++){
-        sum += this._currentAttributes[index][i];
-        if(sum > 1){
-          return true;
-        }
-        index++;
-      }
-      return false; // fixme
+      return false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      for (key in this._currentAttributes) {
-        if (key !== "n") {
-          if (this.hasMajorDiagonalConflictAt(key))
-            return true;
+      for(var i = 0 - this._currentAttributes.n + 1; i < this._currentAttributes.n; i++){
+        if (this.hasMajorDiagonalConflictAt(i)){
+          return true;
         }
       }
       return false;
@@ -185,7 +203,7 @@
       var index;
       if(minorDiagonalColumnIndexAtFirstRow > this._currentAttributes.n - 1){
         index = minorDiagonalColumnIndexAtFirstRow-(this._currentAttributes.n-1);
-        minorDiagonalColumnIndexAtFirstRow = 3;
+        minorDiagonalColumnIndexAtFirstRow = this._currentAttributes.n - 1;
       } else{
         index = 0;
       }
@@ -205,10 +223,10 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      for (key in this._currentAttributes) {
-        if (key !== "n") {
-          if (this.hasMinorDiagonalConflictAt(key))
-            return true;
+      //0 - row1, 2- row3
+      for(var i = 0; i < this._currentAttributes.n * 2 - 1; i++){
+        if(this.hasMinorDiagonalConflictAt(i)){
+          return true;
         }
       }
       return false;
